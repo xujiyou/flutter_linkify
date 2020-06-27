@@ -69,9 +69,12 @@ class Linkify extends StatelessWidget {
   /// Defines how to measure the width of the rendered text.
   final TextWidthBasis textWidthBasis;
 
+  final TextSpan header;
+
   const Linkify({
     Key key,
     @required this.text,
+    this.header,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,
     this.options,
@@ -110,6 +113,7 @@ class Linkify extends StatelessWidget {
       textWidthBasis: textWidthBasis,
       text: buildTextSpan(
         elements,
+        header: this.header,
         style: Theme.of(context).textTheme.bodyText2.merge(style),
         onOpen: onOpen,
         linkStyle: Theme.of(context)
