@@ -200,9 +200,12 @@ class SelectableLinkify extends StatelessWidget {
 
   final ScrollPhysics scrollPhysics;
 
+  final TextSpan header;
+
   const SelectableLinkify({
     Key key,
     @required this.text,
+    this.header,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,
     this.options,
@@ -240,6 +243,7 @@ class SelectableLinkify extends StatelessWidget {
     return SelectableText.rich(
       buildTextSpan(
         elements,
+        header: this.header,
         style: Theme.of(context).textTheme.bodyText2.merge(style),
         onOpen: onOpen,
         linkStyle: Theme.of(context)
@@ -278,25 +282,33 @@ TextSpan buildTextSpan(
   TextStyle style,
   TextStyle linkStyle,
   LinkCallback onOpen,
+  TextSpan header
 }) {
+
+  List<TextSpan> list = elements.map<TextSpan>(
+        (element) {
+      if (element is LinkableElement) {
+        return TextSpan(
+          text: element.text,
+          style: linkStyle,
+          recognizer: onOpen != null
+              ? (TapGestureRecognizer()..onTap = () => onOpen(element))
+              : null,
+        );
+      } else {
+        return TextSpan(
+          text: element.text,
+          style: style,
+        );
+      }
+    },
+  ).toList();
+
+  if (header != null) {
+    list.insert(0, header);
+  }
+
   return TextSpan(
-    children: elements.map<TextSpan>(
-      (element) {
-        if (element is LinkableElement) {
-          return TextSpan(
-            text: element.text,
-            style: linkStyle,
-            recognizer: onOpen != null
-                ? (TapGestureRecognizer()..onTap = () => onOpen(element))
-                : null,
-          );
-        } else {
-          return TextSpan(
-            text: element.text,
-            style: style,
-          );
-        }
-      },
-    ).toList(),
+    children: list,
   );
 }
